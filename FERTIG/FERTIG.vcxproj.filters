@@ -18,10 +18,28 @@
     <ClCompile Include="MyForm.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="Vessel.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="Team.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="Shell.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyForm.h">
       <Filter>來源檔案</Filter>
+    </ClInclude>
+    <ClInclude Include="Vessel.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Team.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Shell.h">
+      <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

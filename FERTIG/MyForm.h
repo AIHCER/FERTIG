@@ -83,6 +83,22 @@ namespace FERTIG
 		void ShowBattleLog();
 
 		void analysisString();
+
+		array<String ^>^ cutString(String^);
+
+		void excute(String ^);
+
+		void set(String ^);
+
+		void fire(String ^);
+
+		void defense(String ^);
+
+		void tag(String ^);
+
+		void move(String ^);
+		
+		void not(String ^);
 		/*------------------------------------方法跟變數定義到這就好---------------------------------------*/
 #pragma region Windows Form Designer generated code
 		/// <summary>

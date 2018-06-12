@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 
+using namespace System;
 using std::string;
 
 #pragma once

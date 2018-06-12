@@ -1,11 +1,53 @@
 #include "MyForm.h"
+#include "Team.h"
+#include "Shell.h"
+
 #include <iostream>
 #include <vector>
 #include <string>
+#include <ctime>
+#include <cmath>
+#include <math.h>
+
 using namespace System;
 using namespace System::Windows::Forms;
 using std::vector;
 using std::string;
+
+// 存戰艦們
+vector <Vessel> vessels;
+
+// 存砲彈們
+vector <Shell> shells;
+
+enum Command {
+	SET,
+	FIRE,
+	DEFENSE,
+	TAG,
+	MOVE,
+	NOT
+};
+
+Command changeType(String ^ input) {
+	if (input == "SET")
+		return SET;
+	else if (input == "FIRE")
+		return FIRE;
+	else if (input == "DEFENSE")
+		return DEFENSE;
+	else if (input == "TAG")
+		return TAG;
+	else if (input == "MOVE")
+		return MOVE;
+	else if (input == "NOT")
+		return NOT;
+	else {
+		////////////////////
+		// RUN TIME ERROR //
+		////////////////////
+	}
+}
 
 [STAThreadAttribute]
 void Main(array<System::String^>^ args)
@@ -17,6 +59,10 @@ void Main(array<System::String^>^ args)
 }
 
 //S_TeamA , S_TeamB 顧名思義 Team 的所有資料
+
+Team TeamA("TeamA");
+Team TeamB("TeamB");
+
 //result 裝的是判斷完的結果,順序要自己確認
 //ShowBattleLog() 他做的是把result所有的字丟去Log的textBox
 //analaysisString() 所有的運算都在這裡處理
@@ -30,9 +76,75 @@ void Main(array<System::String^>^ args)
 /// </summary>
 void FERTIG::MyForm::analysisString()
 {
-	//Add 資料進輸出的function
+	array<String ^>^ Team_A_data = cutString(S_TeamA);
+	array<String ^>^ Team_B_data = cutString(S_TeamB);
+	for (int i = 0; i < Team_A_data->Length; i++) {
+		excute(Team_A_data[i]);
+	}
+	for (int i = 0; i < Team_B_data->Length; i++) {
+		excute(Team_B_data[i]);
+	}
 	result->Add("");
 	ShowBattleLog();
+}
+
+void FERTIG::MyForm::excute(String ^ input) {
+	int cmd = changeType(input->Substring(0, input->IndexOf(' ')));
+	switch (cmd) {
+	case SET:
+		set(input);
+		break;
+	case FIRE:
+		fire(input);
+		break;
+	case DEFENSE:
+		defense(input);
+		break;
+	case TAG:
+		tag(input);
+		break;
+	case MOVE:
+		move(input);
+		break;
+	case NOT:
+		not(input);
+		break;
+	}
+}
+
+void FERTIG::MyForm::set(String ^)
+{
+	throw gcnew System::NotImplementedException();
+}
+
+void FERTIG::MyForm::fire(String ^)
+{
+	throw gcnew System::NotImplementedException();
+}
+
+void FERTIG::MyForm::defense(String ^)
+{
+	throw gcnew System::NotImplementedException();
+}
+
+void FERTIG::MyForm::tag(String ^)
+{
+	throw gcnew System::NotImplementedException();
+}
+
+void FERTIG::MyForm::move(String ^)
+{
+	throw gcnew System::NotImplementedException();
+}
+
+void FERTIG::MyForm::not(String ^)
+{
+	throw gcnew System::NotImplementedException();
+}
+
+array<String ^>^ FERTIG::MyForm::cutString(String ^ input) {
+	input = input->Replace("\r\n", "\n");
+	return input->Split('\n');
 }
 
 /// <summary>
@@ -40,6 +152,7 @@ void FERTIG::MyForm::analysisString()
 /// <para>要確保資料沒有問題</para> 
 ///	<para>順序在放進reuslt前搞定</para> 
 /// </summary>
+
 void FERTIG::MyForm::ShowBattleLog()
 {
 	txtLog->Text = "";
