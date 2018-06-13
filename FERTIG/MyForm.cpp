@@ -116,6 +116,12 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 	string type = chars;
 	array <String ^>^ numbers = elements[3]->Split(',');
 	float x = Convert::ToDouble(numbers[0]->Replace("(", "")), y = Convert::ToDouble(numbers[1]->Replace(")", ""));
+	for (int i = 0; i < TeamA.vessels.size(); i++)
+		if (TeamA.vessels[i]->getsName() == name)
+			return;
+	for (int i = 0; i < TeamB.vessels.size(); i++)
+		if (TeamB.vessels[i]->getsName() == name)
+			return;
 	if (type == "CV")
 		newVessel = new CV(name, type, x, y);
 	else if (type == "DD")
@@ -236,16 +242,22 @@ void FERTIG::MyForm::move(String ^ input, Team T)
 		//Fail
 	}
 
-
-	double q = angle / 180 * pi;
-	double xSpeed = std::cos(q) * speed;
-	double ySpeed = -std::sin(q) * speed;
-	if (T.vessels[index]->getX() > 20 || T.vessels[index]->getX() < 0 || T.vessels[index]->getY() > 20 || T.vessels[index]->getY() < 0) {
-		return;
+	if (!(T.vessels[index]->getX() >= 20 || T.vessels[index]->getX() <= 0 || T.vessels[index]->getY() >= 20 || T.vessels[index]->getY() <= 0)) {
+		double q = angle / 180 * pi;
+		double xSpeed = std::cos(q) * speed;
+		double ySpeed = -std::sin(q) * speed;
+		T.vessels[index]->setX(T.vessels[index]->getX() + xSpeed);
+		T.vessels[index]->setY(T.vessels[index]->getY() + ySpeed);
+		if (T.vessels[index]->getX() > 20)
+			T.vessels[index]->setX(20);
+		if (T.vessels[index]->getX() < 0)
+			T.vessels[index]->setX(0);
+		if (T.vessels[index]->getY() > 20)
+			T.vessels[index]->setY(20);
+		if (T.vessels[index]->getY() < 0)
+			T.vessels[index]->setY(0);
+		addObjecttoWF(T.vessels[index], T);
 	}
-	T.vessels[index]->setX(T.vessels[index]->getX() + xSpeed);
-	T.vessels[index]->setY(T.vessels[index]->getY() + ySpeed);
-	addObjecttoWF(T.vessels[index], T);
 }
 
 void FERTIG::MyForm::not(String ^, Team)
