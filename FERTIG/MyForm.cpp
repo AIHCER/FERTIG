@@ -72,42 +72,6 @@ Team TeamB("TeamB");
 
 
 
-void shellMove(vector <Shell*> shells) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	float tempR;
-	float boom;
-	for (int index = 0; index < shells.size(); index++) {
-		shells[index]->setX(shells[index]->getX() + shells[index]->xSpeed);
-		shells[index]->setY(shells[index]->getY() + shells[index]->ySpeed);
-		
-		tempR = sqrt(pow(shells[index]->getX() - shells[index]->originX, 2) + pow(shells[index]->getY() - shells[index]->originY, 2));
-		if (tempR >= shells[index]->r) {
-			for (int x = 0; x < TeamA.vessels.size(); x++) {
-				boom = sqrt(pow(TeamA.vessels[x]->getX() - shells[index]->disX, 2) + pow(TeamA.vessels[x]->getY() - shells[index]->disY, 2));
-				if (boom <= 1.5) {
-					TeamA.vessels[x]->hp -= shells[index]->damage;
-					if (TeamA.vessels[x]->hp <= 0) {
-						TeamA.vessels.erase(TeamA.vessels.begin() + x);
-					}
-				}
-			}
-			for (int y = 0; y < TeamB.vessels.size(); y++) {
-				boom = sqrt(pow(TeamB.vessels[y]->getX() - shells[index]->disX, 2) + pow(TeamB.vessels[y]->getY() - shells[index]->disY, 2));
-				if (boom <= 1.5) {
-					TeamB.vessels[y]->hp -= shells[index]->damage;
-					if (TeamB.vessels[y]->hp <= 0) {
-						TeamB.vessels.erase(TeamB.vessels.begin() + y);
-					}
-				}
-			}
-
-			shells.erase(shells.begin() + index);
-		}
-	}
-
-
-}
-
-
 
 /// <summary>
 /// <para>按Start的時候已經把"TeamA"跟"TeamB"的值抓好</para> 
@@ -130,6 +94,8 @@ void FERTIG::MyForm::analysisString()
 	ShowBattleLog();
 
 }
+
+
 
 void FERTIG::MyForm::excute(String ^ input, Team team) {
 	if (input == "")
@@ -184,7 +150,7 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 	else if (type == "BB")
 
 		newVessel = new BB(name, type, x, y);
-	addObjecttoWF(newVessel, team);
+	addVesseltoWF(newVessel, team);
 	
 
 	if (team.getTeamName() == "TeamA")
@@ -192,6 +158,44 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 	else
 		TeamB.vessels.push_back(newVessel);
 }
+
+void FERTIG::MyForm::shellMove(vector <Shell*> shells) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	float tempR;
+	float boom;
+	for (int index = 0; index < shells.size(); index++) {
+		shells[index]->setX(shells[index]->getX() + shells[index]->xSpeed);
+		shells[index]->setY(shells[index]->getY() + shells[index]->ySpeed);
+
+		tempR = sqrt(pow(shells[index]->getX() - shells[index]->originX, 2) + pow(shells[index]->getY() - shells[index]->originY, 2));
+		if (tempR >= shells[index]->r) {
+			for (int x = 0; x < TeamA.vessels.size(); x++) {
+				boom = sqrt(pow(TeamA.vessels[x]->getX() - shells[index]->disX, 2) + pow(TeamA.vessels[x]->getY() - shells[index]->disY, 2));
+				if (boom <= 1.5) {
+					TeamA.vessels[x]->hp -= shells[index]->damage;
+					if (TeamA.vessels[x]->hp <= 0) {
+						TeamA.vessels.erase(TeamA.vessels.begin() + x);
+					}
+				}
+			}
+			for (int y = 0; y < TeamB.vessels.size(); y++) {
+				boom = sqrt(pow(TeamB.vessels[y]->getX() - shells[index]->disX, 2) + pow(TeamB.vessels[y]->getY() - shells[index]->disY, 2));
+				if (boom <= 1.5) {
+					TeamB.vessels[y]->hp -= shells[index]->damage;
+					if (TeamB.vessels[y]->hp <= 0) {
+						TeamB.vessels.erase(TeamB.vessels.begin() + y);
+					}
+				}
+			}
+
+			shells.erase(shells.begin() + index);
+		}
+
+
+
+		addShelltoWF(shells[index]);
+	}
+}
+
 
 void FERTIG::MyForm::fire(String ^ input, Team T)
 {
@@ -216,6 +220,7 @@ void FERTIG::MyForm::fire(String ^ input, Team T)
 
 
 	T.vessels[index]->atkCurrent = T.vessels[index]->atkCD;
+	//每次跑的時候還沒減掉CD
 
 	T.setShootTimes();
 	const char* chars =
@@ -232,9 +237,11 @@ void FERTIG::MyForm::fire(String ^ input, Team T)
 	float sin = d / r;
 	float xSpeed = cos * T.vessels[index]->shellSpeed / 60 * 15;
 	float ySpeed = sin * T.vessels[index]->shellSpeed / 60 * 15;
-	Shell A(T.vessels[index]->getX(), T.vessels[index]->getY(),x, y, xSpeed, ySpeed, r, T.vessels[index]->damage);
+	chars = (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(T.getTeamName()).ToPointer());
+	string Tname = chars;
+	Shell A(Tname ,T.vessels[index]->getX(), T.vessels[index]->getY(),x, y, xSpeed, ySpeed, r, T.vessels[index]->damage);
 	A.setName(shellName);
-
+	
 	shells.push_back(&A);
 }
 
@@ -314,7 +321,7 @@ void FERTIG::MyForm::move(String ^ input, Team T)
 			T.vessels[index]->setY(20);
 		if (T.vessels[index]->getY() < 0)
 			T.vessels[index]->setY(0);
-		addObjecttoWF(T.vessels[index], T);
+		addVesseltoWF(T.vessels[index], T);
 	}
 }
 
@@ -325,27 +332,50 @@ void FERTIG::MyForm::not(String ^, Team)
 
 }
 
-void FERTIG::MyForm::addObjecttoWF(Base* object, Team team) {
+void FERTIG::MyForm::addObjecttoShell(Base* object) {
+
+}
+
+void FERTIG::MyForm::addShelltoWF(Shell* object) {
+	String ^ labelName = object->getName();
+	Label ^ newObject = gcnew Label();
+	removeShellbyWF(object);
+	newObject->Name = labelName;
+	newObject->Text = "●" + object->getName();
+	newObject->Location = Point(object->getX() * 20 + 10, object->getY() * 20 + 10);
+	//確認他的隊伍然後改顏色
+	newObject->ForeColor = Color::Purple;
+	//放到畫面上
+	newObject->AutoSize = true;
+	this->Controls->Add(newObject);
+}
+
+void FERTIG::MyForm::addVesseltoWF(Base* object, Team team) {
 	String ^ labelName = team.getTeamName() + "_" + object->getName();
 	Label ^ newObject = gcnew Label();
-	removeObjectbyWF(object, team);
+	removeVesselbyWF(object, team);
 	newObject->Name = labelName;
-	if (labelName->IndexOf("Shell") != -1)
-		newObject->Text = "●" + object->getName();
-	else
-		newObject->Text = "▲" + object->getName();
+	newObject->Text = "▲" + object->getName();
 	newObject->Location = Point(object->getX() * 20 + 10, object->getY() * 20 + 10);
 	//確認他的隊伍然後改顏色
 	if (team.getTeamName() == "TeamA")
 		newObject->ForeColor = Color::Red;
 	else
 		newObject->ForeColor = Color::Blue;
+	newObject->AutoSize = true;
 	//放到畫面上
 	this->Controls->Add(newObject);
 }
 
-void FERTIG::MyForm::removeObjectbyWF(Base* object, Team team) {
+void FERTIG::MyForm::removeVesselbyWF(Base* object, Team team) {
 	String^ LabelName = team.getTeamName() + "_" + object->getName();
+	LabelName = LabelName->Replace("-", "");
+	if (this->Controls[LabelName] != nullptr)
+		this->Controls->RemoveByKey(LabelName);
+}
+
+void FERTIG::MyForm::removeShellbyWF(Shell* object) {
+	String^ LabelName = object->getName();
 	LabelName = LabelName->Replace("-", "");
 	if (this->Controls[LabelName] != nullptr)
 		this->Controls->RemoveByKey(LabelName);

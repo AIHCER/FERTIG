@@ -112,9 +112,17 @@ namespace FERTIG
 		
 		void not(String ^, Team);
 
-		void addObjecttoWF(Base* object, Team team);
+		void addObjecttoShell(Base * object);
 
-		void removeObjectbyWF(Base* object, Team team);
+		void addVesseltoWF(Base* object, Team team);
+
+		void addShelltoWF(Shell* object);
+
+		void removeVesselbyWF(Base* object, Team team);
+
+		void removeShellbyWF(Shell* object);
+
+		void shellMove(vector <Shell*> shells);
 		/*------------------------------------方法跟變數定義到這就好---------------------------------------*/
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -144,6 +152,7 @@ namespace FERTIG
 			this->txtTeamA->Name = L"txtTeamA";
 			this->txtTeamA->Size = System::Drawing::Size(280, 225);
 			this->txtTeamA->TabIndex = 0;
+			this->txtTeamA->TextChanged += gcnew System::EventHandler(this, &MyForm::txtTeamA_TextChanged);
 			// 
 			// btnPause
 			// 
@@ -330,6 +339,8 @@ namespace FERTIG
 	private: System::Void txtLog_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 	}
 private: System::Void lblTimes_Click(System::Object^  sender, System::EventArgs^  e) {
+}
+private: System::Void txtTeamA_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 }
 };
 }

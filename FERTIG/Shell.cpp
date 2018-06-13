@@ -6,7 +6,7 @@ Shell::Shell()
 {
 }
 
-Shell::Shell(float originX, float originY, float disX, float disY, float xSpeed, float ySpeed, float r, int damage)
+Shell::Shell(string name, float originX, float originY, float disX, float disY, float xSpeed, float ySpeed, float r, int damage)
 {
 	this->originX = originX;
 	this->originY = originY;
@@ -16,4 +16,5 @@ Shell::Shell(float originX, float originY, float disX, float disY, float xSpeed,
 	this->ySpeed = ySpeed;
 	this->r = r;
 	this->damage = damage;
+	this->teamName = name;
 }
