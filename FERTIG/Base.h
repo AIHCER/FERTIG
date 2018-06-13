@@ -12,6 +12,7 @@ public:
 	float getY() { return y; };
 	String ^ getName() { 
 		return gcnew String (name.c_str()); };
+	string getsName() { return name; };
 	void setX(float X) { x = X; };
 	void setY(float Y) { y = Y; };
 	void setName(String ^ input) {
