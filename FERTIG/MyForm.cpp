@@ -79,67 +79,81 @@ void FERTIG::MyForm::analysisString()
 	array<String ^>^ Team_A_data = cutString(S_TeamA);
 	array<String ^>^ Team_B_data = cutString(S_TeamB);
 	for (int i = 0; i < Team_A_data->Length; i++) {
-		excute(Team_A_data[i]);
+		excute(Team_A_data[i], TeamA);
 	}
 	for (int i = 0; i < Team_B_data->Length; i++) {
-		excute(Team_B_data[i]);
+		excute(Team_B_data[i], TeamB);
 	}
 	result->Add("");
 	ShowBattleLog();
 }
 
-void FERTIG::MyForm::excute(String ^ input) {
+void FERTIG::MyForm::excute(String ^ input, Team team) {
 	int cmd = changeType(input->Substring(0, input->IndexOf(' ')));
 	switch (cmd) {
 	case SET:
-		set(input);
+		set(input, team);
 		break;
 	case FIRE:
-		fire(input);
+		fire(input, team);
 		break;
 	case DEFENSE:
-		defense(input);
+		defense(input, team);
 		break;
 	case TAG:
-		tag(input);
+		tag(input, team);
 		break;
 	case MOVE:
-		move(input);
+		move(input, team);
 		break;
 	case NOT:
-		not(input);
+		not(input, team);
 		break;
 	}
 }
 
-void FERTIG::MyForm::set(String ^)
+void FERTIG::MyForm::set(String ^, Team)
 {
 	throw gcnew System::NotImplementedException();
 }
 
-void FERTIG::MyForm::fire(String ^)
+void FERTIG::MyForm::fire(String ^, Team)
 {
 	throw gcnew System::NotImplementedException();
 }
 
-void FERTIG::MyForm::defense(String ^)
+void FERTIG::MyForm::defense(String ^, Team)
 {
 	throw gcnew System::NotImplementedException();
 }
 
-void FERTIG::MyForm::tag(String ^)
+void FERTIG::MyForm::tag(String ^, Team)
 {
 	throw gcnew System::NotImplementedException();
 }
 
-void FERTIG::MyForm::move(String ^)
+void FERTIG::MyForm::move(String ^, Team)
 {
 	throw gcnew System::NotImplementedException();
 }
 
-void FERTIG::MyForm::not(String ^)
+void FERTIG::MyForm::not(String ^, Team)
 {
 	throw gcnew System::NotImplementedException();
+}
+
+void addObjectoWF(Base* object, Team team) {
+	String ^ labelName = team.getTeamName() + "_" + object->getName;
+	Label ^ newObject = gcnew Label();
+	newObject->Name = labelName;
+	if (labelName->IndexOf("Shell") != -1)
+		newObject->Text = "¡´" + object->getName();
+	else
+		newObject->Text = "¡¶" + object->getName();
+}
+
+void removeObjectoWF(Base*){
+
 }
 
 array<String ^>^ FERTIG::MyForm::cutString(String ^ input) {

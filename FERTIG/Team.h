@@ -17,6 +17,9 @@ public:
 		String^ name = gcnew String(teamName.c_str());
 		return name;
 	};
+	void setShootTimes() { ShootTimes++; };
+
+	int getShootTimes() { return ShootTimes; };
 private:
 	vector<Vessel*> vessels;
 	string teamName;

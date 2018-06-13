@@ -1,11 +1,13 @@
 #include <string>
 #include <iostream>
 
+#include "Base.h"
+
 using namespace System;
 using std::string;
 
 #pragma once
-class Vessel
+class Vessel : public Base
 {
 public:
 	Vessel();//default constructor

@@ -86,19 +86,19 @@ namespace FERTIG
 
 		array<String ^>^ cutString(String^);
 
-		void excute(String ^);
+		void excute(String ^, Team);
 
-		void set(String ^);
+		void set(String ^, Team);
 
-		void fire(String ^);
+		void fire(String ^, Team);
 
-		void defense(String ^);
+		void defense(String ^, Team);
 
-		void tag(String ^);
+		void tag(String ^, Team);
 
-		void move(String ^);
+		void move(String ^, Team);
 		
-		void not(String ^);
+		void not(String ^, Team);
 		/*------------------------------------方法跟變數定義到這就好---------------------------------------*/
 #pragma region Windows Form Designer generated code
 		/// <summary>
