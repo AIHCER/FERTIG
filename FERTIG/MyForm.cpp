@@ -1,13 +1,5 @@
 #include "MyForm.h"
-#include "Team.h"
-#include "Shell.h"
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <ctime>
-#include <cmath>
-#include <math.h>
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -15,10 +7,10 @@ using std::vector;
 using std::string;
 
 // 存戰艦們
-vector <Vessel> vessels;
+vector <Vessel*> vessels;
 
 // 存砲彈們
-vector <Shell> shells;
+vector <Shell*> shells;
 
 enum Command {
 	SET,
@@ -89,7 +81,9 @@ void FERTIG::MyForm::analysisString()
 }
 
 void FERTIG::MyForm::excute(String ^ input, Team team) {
-	int cmd = changeType(input->Substring(0, input->IndexOf(' ')));
+	if (input == "")
+		return;
+	Command cmd = changeType(input->Substring(0, input->IndexOf(' ')));
 	switch (cmd) {
 	case SET:
 		set(input, team);
@@ -112,47 +106,72 @@ void FERTIG::MyForm::excute(String ^ input, Team team) {
 	}
 }
 
-void FERTIG::MyForm::set(String ^, Team)
+void FERTIG::MyForm::set(String ^ input, Team team)
 {
-	throw gcnew System::NotImplementedException();
+	array <String ^>^ elements = input->Split(' ');
+	Vessel *newVessel;
+	String ^ type = elements[2];
+	const char* chars =
+		(const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(elements[1])).ToPointer();
+	string name = chars;
+	array <String ^>^ numbers = elements[3]->Split(',');
+	float x = Convert::ToDouble(numbers[0]->Replace("(", "")), y = Convert::ToDouble(numbers[1]->Replace(")", ""));
+	if (type == "CV")
+		newVessel = new CV(name, x, y);
+	else if (type == "DD")
+		newVessel = new DD(name, x, y);
+	else if (type == "CG")
+		newVessel = new CG(name, x, y);
+	else if (type == "BB")
+		newVessel = new BB(name, x, y);
+	addObjecttoWF(newVessel, team);
+	vessels.push_back(newVessel);
 }
 
 void FERTIG::MyForm::fire(String ^, Team)
 {
-	throw gcnew System::NotImplementedException();
+
 }
 
 void FERTIG::MyForm::defense(String ^, Team)
 {
-	throw gcnew System::NotImplementedException();
+
 }
 
 void FERTIG::MyForm::tag(String ^, Team)
 {
-	throw gcnew System::NotImplementedException();
+
 }
 
 void FERTIG::MyForm::move(String ^, Team)
 {
-	throw gcnew System::NotImplementedException();
+
 }
 
 void FERTIG::MyForm::not(String ^, Team)
 {
-	throw gcnew System::NotImplementedException();
+
 }
 
-void addObjectoWF(Base* object, Team team) {
-	String ^ labelName = team.getTeamName() + "_" + object->getName;
+void FERTIG::MyForm::addObjecttoWF(Base* object, Team team) {
+	String ^ labelName = team.getTeamName() + "_" + object->getName();
 	Label ^ newObject = gcnew Label();
 	newObject->Name = labelName;
 	if (labelName->IndexOf("Shell") != -1)
 		newObject->Text = "●" + object->getName();
 	else
 		newObject->Text = "▲" + object->getName();
+	newObject->Location = Point(object->getX() * 20 + 10, object->getY() * 20 + 10);
+	//確認他的隊伍然後改顏色
+	if (team.getTeamName() == "TeamA")
+		newObject->ForeColor = Color::Red;
+	else
+		newObject->ForeColor = Color::Blue;
+	//放到畫面上
+	this->Controls->Add(newObject);
 }
 
-void removeObjectoWF(Base*){
+void FERTIG::MyForm::removeObjectbyWF(Base*, Team team) {
 
 }
 

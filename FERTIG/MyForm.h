@@ -1,4 +1,14 @@
 #pragma once
+#include "Team.h"
+#include "Shell.h"
+#include "Vessel.h"
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <math.h>
 
 namespace FERTIG
 {
@@ -99,6 +109,10 @@ namespace FERTIG
 		void move(String ^, Team);
 		
 		void not(String ^, Team);
+
+		void addObjecttoWF(Base* object, Team team);
+
+		void removeObjectbyWF(Base* object, Team team);
 		/*------------------------------------方法跟變數定義到這就好---------------------------------------*/
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -126,12 +140,12 @@ namespace FERTIG
 			this->txtTeamA->Location = System::Drawing::Point(6, 26);
 			this->txtTeamA->Multiline = true;
 			this->txtTeamA->Name = L"txtTeamA";
-			this->txtTeamA->Size = System::Drawing::Size(280, 190);
+			this->txtTeamA->Size = System::Drawing::Size(280, 225);
 			this->txtTeamA->TabIndex = 0;
 			// 
 			// btnPause
 			// 
-			this->btnPause->Location = System::Drawing::Point(120, 375);
+			this->btnPause->Location = System::Drawing::Point(160, 483);
 			this->btnPause->Name = L"btnPause";
 			this->btnPause->Size = System::Drawing::Size(93, 39);
 			this->btnPause->TabIndex = 1;
@@ -141,7 +155,7 @@ namespace FERTIG
 			// 
 			// btnStart
 			// 
-			this->btnStart->Location = System::Drawing::Point(230, 375);
+			this->btnStart->Location = System::Drawing::Point(292, 483);
 			this->btnStart->Name = L"btnStart";
 			this->btnStart->Size = System::Drawing::Size(93, 39);
 			this->btnStart->TabIndex = 2;
@@ -153,7 +167,7 @@ namespace FERTIG
 			// 
 			this->lblTimes->AutoSize = true;
 			this->lblTimes->Font = (gcnew System::Drawing::Font(L"新細明體", 14));
-			this->lblTimes->Location = System::Drawing::Point(27, 382);
+			this->lblTimes->Location = System::Drawing::Point(48, 492);
 			this->lblTimes->Name = L"lblTimes";
 			this->lblTimes->Size = System::Drawing::Size(74, 24);
 			this->lblTimes->TabIndex = 3;
@@ -163,27 +177,27 @@ namespace FERTIG
 			// 
 			this->groupBox1->Controls->Add(this->txtTeamB);
 			this->groupBox1->Controls->Add(this->txtTeamA);
-			this->groupBox1->Location = System::Drawing::Point(329, 12);
+			this->groupBox1->Location = System::Drawing::Point(421, 12);
 			this->groupBox1->Name = L"groupBox1";
-			this->groupBox1->Size = System::Drawing::Size(292, 419);
+			this->groupBox1->Size = System::Drawing::Size(292, 510);
 			this->groupBox1->TabIndex = 4;
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"commands";
 			// 
 			// txtTeamB
 			// 
-			this->txtTeamB->Location = System::Drawing::Point(6, 227);
+			this->txtTeamB->Location = System::Drawing::Point(6, 273);
 			this->txtTeamB->Multiline = true;
 			this->txtTeamB->Name = L"txtTeamB";
-			this->txtTeamB->Size = System::Drawing::Size(280, 190);
+			this->txtTeamB->Size = System::Drawing::Size(280, 231);
 			this->txtTeamB->TabIndex = 1;
 			// 
 			// groupBox2
 			// 
 			this->groupBox2->Controls->Add(this->txtLog);
-			this->groupBox2->Location = System::Drawing::Point(627, 12);
+			this->groupBox2->Location = System::Drawing::Point(719, 12);
 			this->groupBox2->Name = L"groupBox2";
-			this->groupBox2->Size = System::Drawing::Size(292, 419);
+			this->groupBox2->Size = System::Drawing::Size(292, 510);
 			this->groupBox2->TabIndex = 5;
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Battle log";
@@ -194,8 +208,9 @@ namespace FERTIG
 			this->txtLog->Multiline = true;
 			this->txtLog->Name = L"txtLog";
 			this->txtLog->ReadOnly = true;
-			this->txtLog->Size = System::Drawing::Size(280, 391);
+			this->txtLog->Size = System::Drawing::Size(280, 476);
 			this->txtLog->TabIndex = 0;
+			this->txtLog->TextChanged += gcnew System::EventHandler(this, &MyForm::txtLog_TextChanged);
 			// 
 			// TimerStart
 			// 
@@ -206,7 +221,7 @@ namespace FERTIG
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 17);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(930, 443);
+			this->ClientSize = System::Drawing::Size(1038, 553);
 			this->Controls->Add(this->groupBox2);
 			this->Controls->Add(this->groupBox1);
 			this->Controls->Add(this->lblTimes);
@@ -244,16 +259,16 @@ namespace FERTIG
 		{
 			labels[i] = gcnew Label();
 			labels[i]->BackColor = Color::Black;
-			labels[i]->Location = Point(0 + bias, 15 * i + bias);
-			labels[i]->Size = Drawing::Size(300, 1);
+			labels[i]->Location = Point(0 + bias, 20 * i + bias);
+			labels[i]->Size = Drawing::Size(400, 1);
 			labels[i]->AutoSize = false;
 		}
 		for (int i = 0; i < 21; i++)
 		{
 			labelV[i] = gcnew Label();
 			labelV[i]->BackColor = Color::Black;
-			labelV[i]->Location = Point(15 * i + bias, 0 + bias);
-			labelV[i]->Size = Drawing::Size(1, 300);
+			labelV[i]->Location = Point(20 * i + bias, 0 + bias);
+			labelV[i]->Size = Drawing::Size(1, 400);
 			labelV[i]->AutoSize = false;
 		}
 		for (int i = 0; i < 21; i++)
@@ -309,5 +324,7 @@ namespace FERTIG
 		analysisString();
 	}
 			 /*--------------------------------這裡全都是視窗物件會看到的東西-----------------------------------*/
-	};
+	private: System::Void txtLog_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+	}
+};
 }
