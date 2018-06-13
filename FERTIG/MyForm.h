@@ -4,11 +4,13 @@
 #include "Vessel.h"
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
 #include <ctime>
 #include <cmath>
 #include <math.h>
+#define pi 3.14159
 
 namespace FERTIG
 {
@@ -169,9 +171,10 @@ namespace FERTIG
 			this->lblTimes->Font = (gcnew System::Drawing::Font(L"新細明體", 14));
 			this->lblTimes->Location = System::Drawing::Point(48, 492);
 			this->lblTimes->Name = L"lblTimes";
-			this->lblTimes->Size = System::Drawing::Size(74, 24);
+			this->lblTimes->Size = System::Drawing::Size(60, 19);
 			this->lblTimes->TabIndex = 3;
 			this->lblTimes->Text = L"MM:ss";
+			this->lblTimes->Click += gcnew System::EventHandler(this, &MyForm::lblTimes_Click);
 			// 
 			// groupBox1
 			// 
@@ -214,12 +217,12 @@ namespace FERTIG
 			// 
 			// TimerStart
 			// 
-			this->TimerStart->Interval = 1000;
+			this->TimerStart->Interval = 66;
 			this->TimerStart->Tick += gcnew System::EventHandler(this, &MyForm::TimerStart_Tick);
 			// 
 			// MyForm
 			// 
-			this->AutoScaleDimensions = System::Drawing::SizeF(9, 17);
+			this->AutoScaleDimensions = System::Drawing::SizeF(7, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1038, 553);
 			this->Controls->Add(this->groupBox2);
@@ -326,5 +329,7 @@ namespace FERTIG
 			 /*--------------------------------這裡全都是視窗物件會看到的東西-----------------------------------*/
 	private: System::Void txtLog_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 	}
+private: System::Void lblTimes_Click(System::Object^  sender, System::EventArgs^  e) {
+}
 };
 }

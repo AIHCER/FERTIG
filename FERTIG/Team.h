@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "Vessel.h"
+#include "Shell.h"
 
 using std::vector;
 
@@ -20,8 +21,11 @@ public:
 	void setShootTimes() { ShootTimes++; };
 
 	int getShootTimes() { return ShootTimes; };
-private:
+	int isNameVessel(String ^ name);
 	vector<Vessel*> vessels;
+
+
+private:
 	string teamName;
 	int ShootTimes = 0;
 };

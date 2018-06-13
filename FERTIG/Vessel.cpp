@@ -10,7 +10,7 @@ Vessel::Vessel(string name, string type, int hp, int speed, int atkDistance, int
 	this->hp = hp;
 	this->speed = speed;
 	this->atkDistance = atkDistance;
-	this->atdCD = atdCD;
+	this->atkCD = atkCD;
 	this->defDistance = defDistance;
 	this->defCD = defCD;
 	this->damage = damage;

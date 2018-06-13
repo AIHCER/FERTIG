@@ -15,16 +15,20 @@ public:
 		int defDistance, int defCD, int damage, int shellSpeed, float x, float y);
 	void tag(string newName);
 	string getType() { return type; };
-private:
-	string type;
+
 	int hp;
 	int speed;
 	int atkDistance;
-	int atdCD;
+	int atkCurrent;
+	int atkCD;
 	int defDistance;
+	int defCurrent;
 	int defCD;
 	int damage;
 	int shellSpeed;
+private:
+	string type;
+
 };
 
 class DD : public Vessel {

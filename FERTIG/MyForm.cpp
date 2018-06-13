@@ -1,6 +1,4 @@
 #include "MyForm.h"
-
-
 using namespace System;
 using namespace System::Windows::Forms;
 using std::vector;
@@ -127,16 +125,90 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 	else if (type == "BB")
 		newVessel = new BB(name, type, x, y);
 	addObjecttoWF(newVessel, team);
-	vessels.push_back(newVessel);
+	
+
+	if (team.getTeamName() == "TeamA")
+		TeamA.vessels.push_back(newVessel);
+	else
+		TeamB.vessels.push_back(newVessel);
 }
 
-void FERTIG::MyForm::fire(String ^, Team)
+void FERTIG::MyForm::fire(String ^ input, Team T)
 {
+	array <String ^>^ elements = input->Split(' ');
+	String ^ name = elements[1];
+	array <String ^>^ numbers = elements[2]->Split(',');
+	float x = Convert::ToDouble(numbers[0]->Replace("(", "")), y = Convert::ToDouble(numbers[1]->Replace(")", ""));
+	
+	int index = T.isNameVessel(name);
+	if (index == -1) {
+		//Fail
+	}
 
+	if (T.vessels[index]->atkCurrent != 0) {
+		//Fail
+	}
+
+	float r = sqrt(pow(T.vessels[index]->getX() - x, 2) + pow(T.vessels[index]->getY() - y, 2));
+	if (r > T.vessels[index]->atkDistance) {
+		//Fail
+	}
+
+
+	T.vessels[index]->atkCurrent = T.vessels[index]->atkCD;
+	T.setShootTimes();
+	const char* chars =
+		(const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(T.getTeamName())).ToPointer();
+	string teamName = chars;
+	string a = std::to_string(T.getShootTimes());
+
+	string shellName = "Shell_" + teamName + a;
+	Shell A;
+	A.setName(shellName);
+	shells.push_back(&A);
+	float c = x - T.vessels[index]->getX();
+	float d = y - T.vessels[index]->getY();
+	float cos = c / r;
+	float sin = d / r;
+	float xSpeed = cos * T.vessels[index]->shellSpeed / 60 * 15;
+	float ySpeed = sin * T.vessels[index]->shellSpeed / 60 * 15;
+	addObjecttoWF(&A, T);
 }
 
-void FERTIG::MyForm::defense(String ^, Team)
+void FERTIG::MyForm::defense(String ^ input, Team T)
 {
+	array <String ^>^ elements = input->Split(' ');
+	String ^ vesselName = elements[1];
+	String ^ shellName = elements[2];
+	int index = T.isNameVessel(vesselName);
+	if (index == -1) {
+		//Fail
+	}
+
+	//if ()//Shell是否在場上
+
+	int index2 = -1;
+	for (int x = 0; x < shells.size(); x++) {
+		if (shellName == shells[x]->getName()) {
+			index2 = x;
+		}
+	}
+	if (index2 == -1) {
+		//Fail
+	}
+
+
+
+	float r = sqrt(pow(T.vessels[index]->getX() - shells[index2]->getX(), 2) + pow(T.vessels[index]->getY() - shells[index2]->getY(), 2));
+	if (r > T.vessels[index]->defDistance) {
+		//Fail
+	}
+
+	T.vessels[index]->defCurrent = T.vessels[index]->defCD;
+	
+	
+	//把炮彈刪掉
+	shells.erase(shells.begin() + index2);
 
 }
 
@@ -145,9 +217,35 @@ void FERTIG::MyForm::tag(String ^, Team)
 
 }
 
-void FERTIG::MyForm::move(String ^, Team)
+void FERTIG::MyForm::move(String ^ input, Team T)
 {
+	array <String ^>^ elements = input->Split(' ');
+	String ^ vesselName = elements[1];
+	String ^ speedstring = elements[2];
+	String ^ anglestring = elements[3];
+	
+	double speed = Convert::ToDouble(speedstring);
+	double angle = Convert::ToDouble(anglestring);
 
+	int index = T.isNameVessel(vesselName);
+	if (index == -1) {
+		//Fail
+	}
+
+	if (abs(speed) > T.vessels[index]->speed) {
+		//Fail
+	}
+
+
+	double q = angle / 180 * pi;
+	double xSpeed = std::cos(q) * speed;
+	double ySpeed = -std::sin(q) * speed;
+	if (T.vessels[index]->getX() > 20 || T.vessels[index]->getX() < 0 || T.vessels[index]->getY() > 20 || T.vessels[index]->getY() < 0) {
+		return;
+	}
+	T.vessels[index]->setX(T.vessels[index]->getX() + xSpeed);
+	T.vessels[index]->setY(T.vessels[index]->getY() + ySpeed);
+	addObjecttoWF(T.vessels[index], T);
 }
 
 void FERTIG::MyForm::not(String ^, Team)
@@ -158,6 +256,7 @@ void FERTIG::MyForm::not(String ^, Team)
 void FERTIG::MyForm::addObjecttoWF(Base* object, Team team) {
 	String ^ labelName = team.getTeamName() + "_" + object->getName();
 	Label ^ newObject = gcnew Label();
+	removeObjectbyWF(object, team);
 	newObject->Name = labelName;
 	if (labelName->IndexOf("Shell") != -1)
 		newObject->Text = "●" + object->getName();
@@ -173,8 +272,11 @@ void FERTIG::MyForm::addObjecttoWF(Base* object, Team team) {
 	this->Controls->Add(newObject);
 }
 
-void FERTIG::MyForm::removeObjectbyWF(Base*, Team team) {
-
+void FERTIG::MyForm::removeObjectbyWF(Base* object, Team team) {
+	String^ LabelName = team.getTeamName() + "_" + object->getName();
+	LabelName = LabelName->Replace("-", "");
+	if (this->Controls[LabelName] != nullptr)
+		this->Controls->RemoveByKey(LabelName);
 }
 
 array<String ^>^ FERTIG::MyForm::cutString(String ^ input) {
