@@ -110,20 +110,22 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 {
 	array <String ^>^ elements = input->Split(' ');
 	Vessel *newVessel;
-	String ^ type = elements[2];
+	String ^ type_ = elements[2];
 	const char* chars =
 		(const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(elements[1])).ToPointer();
 	string name = chars;
+	chars = (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(type_)).ToPointer();
+	string type = chars;
 	array <String ^>^ numbers = elements[3]->Split(',');
 	float x = Convert::ToDouble(numbers[0]->Replace("(", "")), y = Convert::ToDouble(numbers[1]->Replace(")", ""));
 	if (type == "CV")
-		newVessel = new CV(name, x, y);
+		newVessel = new CV(name, type, x, y);
 	else if (type == "DD")
-		newVessel = new DD(name, x, y);
+		newVessel = new DD(name, type, x, y);
 	else if (type == "CG")
-		newVessel = new CG(name, x, y);
+		newVessel = new CG(name, type, x, y);
 	else if (type == "BB")
-		newVessel = new BB(name, x, y);
+		newVessel = new BB(name, type, x, y);
 	addObjecttoWF(newVessel, team);
 	vessels.push_back(newVessel);
 }
