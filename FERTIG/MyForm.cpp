@@ -174,7 +174,7 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 		return;
 	for (int i = 0; i < TeamB.vessels.size(); i++)
 		if (TeamB.vessels[i]->getsName() == name)
-		return;
+		return;	
 	if (type == "CV")
 		newVessel = new CV(name, type, x, y);
 	else if (type == "DD")
@@ -182,6 +182,7 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 	else if (type == "CG")
 		newVessel = new CG(name, type, x, y);
 	else if (type == "BB")
+
 		newVessel = new BB(name, type, x, y);
 	addObjecttoWF(newVessel, team);
 	
@@ -299,8 +300,6 @@ void FERTIG::MyForm::move(String ^ input, Team T)
 	if (abs(speed) > T.vessels[index]->speed) {
 		//Fail
 	}
-
-
 	if (!(T.vessels[index]->getX() >= 20 || T.vessels[index]->getX() <= 0 || T.vessels[index]->getY() >= 20 || T.vessels[index]->getY() <= 0)) {
 		double q = angle / 180 * pi;
 		double xSpeed = std::cos(q) * speed;
@@ -317,7 +316,6 @@ void FERTIG::MyForm::move(String ^ input, Team T)
 			T.vessels[index]->setY(0);
 		addObjecttoWF(T.vessels[index], T);
 	}
-
 }
 
 
