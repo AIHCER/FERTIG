@@ -10,7 +10,8 @@
 #include <ctime>
 #include <cmath>
 #include <math.h>
-#define pi 3.14159
+#define PI 3.14159
+#define ERR 0.00001
 
 namespace FERTIG
 {
@@ -180,7 +181,7 @@ namespace FERTIG
 			this->lblTimes->Font = (gcnew System::Drawing::Font(L"·s²Ó©úÅé", 14));
 			this->lblTimes->Location = System::Drawing::Point(48, 492);
 			this->lblTimes->Name = L"lblTimes";
-			this->lblTimes->Size = System::Drawing::Size(60, 19);
+			this->lblTimes->Size = System::Drawing::Size(74, 24);
 			this->lblTimes->TabIndex = 3;
 			this->lblTimes->Text = L"MM:ss";
 			this->lblTimes->Click += gcnew System::EventHandler(this, &MyForm::lblTimes_Click);
@@ -189,7 +190,7 @@ namespace FERTIG
 			// 
 			this->groupBox1->Controls->Add(this->txtTeamB);
 			this->groupBox1->Controls->Add(this->txtTeamA);
-			this->groupBox1->Location = System::Drawing::Point(421, 12);
+			this->groupBox1->Location = System::Drawing::Point(433, 12);
 			this->groupBox1->Name = L"groupBox1";
 			this->groupBox1->Size = System::Drawing::Size(292, 510);
 			this->groupBox1->TabIndex = 4;
@@ -216,7 +217,7 @@ namespace FERTIG
 			// 
 			// txtLog
 			// 
-			this->txtLog->Location = System::Drawing::Point(6, 26);
+			this->txtLog->Location = System::Drawing::Point(12, 28);
 			this->txtLog->Multiline = true;
 			this->txtLog->Name = L"txtLog";
 			this->txtLog->ReadOnly = true;
@@ -231,7 +232,7 @@ namespace FERTIG
 			// 
 			// MyForm
 			// 
-			this->AutoScaleDimensions = System::Drawing::SizeF(7, 13);
+			this->AutoScaleDimensions = System::Drawing::SizeF(9, 17);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1038, 553);
 			this->Controls->Add(this->groupBox2);

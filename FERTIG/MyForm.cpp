@@ -20,7 +20,7 @@ enum Command {
 };
 
 void moveSecond(double speed, double angle, Team& T, int index) {
-	double q = angle / 180 * pi;
+	double q = angle / 180 * PI;
 	double xSpeed = std::cos(q) * speed;
 	double ySpeed = -std::sin(q) * speed;
 	if (T.vessels[index]->getX() > 20 || T.vessels[index]->getX() < 0 || T.vessels[index]->getY() > 20 || T.vessels[index]->getY() < 0) {
@@ -307,25 +307,31 @@ void FERTIG::MyForm::move(String ^ input, Team T)
 	if (abs(speed) > T.vessels[index]->speed) {
 		//Fail
 	}
-	if (!(T.vessels[index]->getX() >= 20 || T.vessels[index]->getX() <= 0 || T.vessels[index]->getY() >= 20 || T.vessels[index]->getY() <= 0)) {
-		double q = angle / 180 * pi;
-		double xSpeed = std::cos(q) * speed;
-		double ySpeed = -std::sin(q) * speed;
-		T.vessels[index]->setX(T.vessels[index]->getX() + xSpeed);
-		T.vessels[index]->setY(T.vessels[index]->getY() + ySpeed);
-		if (T.vessels[index]->getX() > 20)
-			T.vessels[index]->setX(20);
-		if (T.vessels[index]->getX() < 0)
-			T.vessels[index]->setX(0);
-		if (T.vessels[index]->getY() > 20)
-			T.vessels[index]->setY(20);
-		if (T.vessels[index]->getY() < 0)
-			T.vessels[index]->setY(0);
-		addVesseltoWF(T.vessels[index], T);
+	float q = angle / 180 * PI;
+	float xSpeed = std::cos(q) * speed;
+	float ySpeed = -std::sin(q) * speed;
+	T.vessels[index]->setX(T.vessels[index]->getX() + xSpeed);
+	T.vessels[index]->setY(T.vessels[index]->getY() + ySpeed);
+	bool outOfRange = false;
+	if (T.vessels[index]->getX() - 20 > ERR) {
+		T.vessels[index]->setX(20);
+		outOfRange = true;
 	}
+	if (T.vessels[index]->getX() < -ERR) {
+		T.vessels[index]->setX(0); 
+		outOfRange = true;
+	}
+	if (T.vessels[index]->getY() - 20 > ERR) {
+		T.vessels[index]->setY(20);
+		outOfRange = true;
+	}
+	if (T.vessels[index]->getY() < -ERR) {
+		T.vessels[index]->setY(0);
+		outOfRange = true;
+	}
+	if (!outOfRange)
+		addVesseltoWF(T.vessels[index], T);
 }
-
-
 
 void FERTIG::MyForm::not(String ^, Team)
 {
