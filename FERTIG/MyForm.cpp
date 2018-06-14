@@ -4,9 +4,6 @@ using namespace System::Windows::Forms;
 using std::vector;
 using std::string;
 
-// 存戰艦們
-vector <Vessel*> vessels;
-
 // 存砲彈們
 vector <Shell*> shells;
 
@@ -206,16 +203,16 @@ void FERTIG::MyForm::fire(String ^ input, Team T)
 	
 	int index = T.isNameVessel(name);
 	if (index == -1) {
-		//Fail
+		return; // fail
 	}
 
 	if (T.vessels[index]->atkCurrent != 0) {
-		//Fail
+		return; // fail
 	}
 
 	float r = sqrt(pow(T.vessels[index]->getX() - x, 2) + pow(T.vessels[index]->getY() - y, 2));
 	if (r > T.vessels[index]->atkDistance) {
-		//Fail
+		return; // fail
 	}
 
 
@@ -284,24 +281,24 @@ void FERTIG::MyForm::defense(String ^ input, Team T)
 
 }
 
-void FERTIG::MyForm::tag(String ^ input, Team)
+void FERTIG::MyForm::tag(String ^ input, Team T)
 {
 	array <String ^>^ elements = input->Split(' ');
 	String ^ oldname = elements[1];
 	String ^ newname = elements[2];
 	int index1 = -1;
 	int index2 = -1;
-	for (size_t i = 0; i < vessels.size(); i++)
+	for (size_t i = 0; i < T.vessels.size(); i++)
 	{
-		if (vessels[i]->getName == oldname)
+		if (T.vessels[i]->getName() == oldname)
 		{
 			index1 = i;
 			break;
 		}
 	}
-	for (size_t i = 0; i < vessels.size(); i++)
+	for (size_t i = 0; i < T.vessels.size(); i++)
 	{
-		if (vessels[i]->getName == oldname)
+		if (T.vessels[i]->getName() == newname)
 		{
 			index2 = i;
 			break;
@@ -309,9 +306,9 @@ void FERTIG::MyForm::tag(String ^ input, Team)
 	}
 	if (index1 != -1 && index2 == -1)
 	{
-		vessels[index1]->setName(newname);
+		T.vessels[index1]->setName(newname);
+		addVesseltoWF(T.vessels[index1], T);
 	}
-
 }
 
 void FERTIG::MyForm::move(String ^ input, Team T)

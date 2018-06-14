@@ -15,6 +15,8 @@ Vessel::Vessel(string name, string type, int hp, int speed, int atkDistance, int
 	this->defCD = defCD;
 	this->damage = damage;
 	this->shellSpeed = shellSpeed;
+	this->atkCurrent = 0;
+	this->defCurrent = 0;
 	setX(x);
 	setY(y);
 	setName(name);
