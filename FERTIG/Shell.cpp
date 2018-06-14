@@ -1,11 +1,5 @@
 #include "Shell.h"
 
-
-
-Shell::Shell()
-{
-}
-
 Shell::Shell(string name, float originX, float originY, float disX, float disY, float xSpeed, float ySpeed, float r, int damage)
 {
 	this->originX = originX;

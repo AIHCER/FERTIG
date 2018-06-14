@@ -9,7 +9,6 @@ using std::string;
 class Shell : public Base
 {
 public:
-	Shell();
 	Shell(string, float originX, float originY, float disX, float disY, float xSpeed, float ySpeed, float r, int damage);
 	float originX;
 	float originY;

@@ -88,7 +88,7 @@ void FERTIG::MyForm::analysisString()
 	}
 	result->Add("");
 	shellMove(shells);
-	ShowBattleLog();
+	// ShowBattleLog();
 
 }
 
@@ -157,8 +157,8 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 }
 
 void FERTIG::MyForm::shellMove(vector <Shell*> shells) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	float tempR;
-	float boom;
+	float tempR = 0;
+	float boom = 0;
 	for (int index = 0; index < shells.size(); index++) {
 		shells[index]->setX(shells[index]->getX() + shells[index]->xSpeed);
 		shells[index]->setY(shells[index]->getY() + shells[index]->ySpeed);
@@ -171,6 +171,7 @@ void FERTIG::MyForm::shellMove(vector <Shell*> shells) {////////////////////////
 					TeamA.vessels[x]->hp -= shells[index]->damage;
 					if (TeamA.vessels[x]->hp <= 0) {
 						TeamA.vessels.erase(TeamA.vessels.begin() + x);
+						x--;
 					}
 				}
 			}
@@ -180,15 +181,14 @@ void FERTIG::MyForm::shellMove(vector <Shell*> shells) {////////////////////////
 					TeamB.vessels[y]->hp -= shells[index]->damage;
 					if (TeamB.vessels[y]->hp <= 0) {
 						TeamB.vessels.erase(TeamB.vessels.begin() + y);
+						y--;
 					}
 				}
 			}
-
 			shells.erase(shells.begin() + index);
+			index--;
 		}
-
-
-
+		else
 		addShelltoWF(shells[index]);
 	}
 }
@@ -226,8 +226,6 @@ void FERTIG::MyForm::fire(String ^ input, Team T)
 	string a = std::to_string(T.getShootTimes());
 	string shellName = "Shell_" + teamName + a;
 
-	
-
 	float c = x - T.vessels[index]->getX();
 	float d = y - T.vessels[index]->getY();
 	float cos = c / r;
@@ -236,10 +234,13 @@ void FERTIG::MyForm::fire(String ^ input, Team T)
 	float ySpeed = sin * T.vessels[index]->shellSpeed / 60 * 15;
 	chars = (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(T.getTeamName()).ToPointer());
 	string Tname = chars;
-	Shell A(Tname ,T.vessels[index]->getX(), T.vessels[index]->getY(),x, y, xSpeed, ySpeed, r, T.vessels[index]->damage);
-	A.setName(shellName);
+	Shell * A;
+	A = new Shell(Tname, T.vessels[index]->getX(), T.vessels[index]->getY(), x, y, xSpeed, ySpeed, r, T.vessels[index]->damage);
+	A->setX(T.vessels[index]->getX());
+	A->setY(T.vessels[index]->getY());
+	A->setName(shellName);
 	
-	shells.push_back(&A);
+	shells.push_back(A);
 }
 
 

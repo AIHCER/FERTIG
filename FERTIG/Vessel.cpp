@@ -4,7 +4,7 @@ Vessel::Vessel()
 {
 }
 
-Vessel::Vessel(string name, string type, int hp, int speed, int atkDistance, int atdCD, int defDistance, int defCD, int damage, int shellSpeed, float x, float y)
+Vessel::Vessel(string name, string type, int hp, int speed, int atkDistance, int atkCD, int defDistance, int defCD, int damage, int shellSpeed, float x, float y)
 {
 	this->type = type;
 	this->hp = hp;
