@@ -113,8 +113,6 @@ namespace FERTIG
 		
 		void not(String ^, Team);
 
-		void addObjecttoShell(Base * object);
-
 		void addVesseltoWF(Base* object, Team team);
 
 		void addShelltoWF(Shell* object);

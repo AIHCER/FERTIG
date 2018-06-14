@@ -284,8 +284,33 @@ void FERTIG::MyForm::defense(String ^ input, Team T)
 
 }
 
-void FERTIG::MyForm::tag(String ^, Team)
+void FERTIG::MyForm::tag(String ^ input, Team)
 {
+	array <String ^>^ elements = input->Split(' ');
+	String ^ oldname = elements[1];
+	String ^ newname = elements[2];
+	int index1 = -1;
+	int index2 = -1;
+	for (size_t i = 0; i < vessels.size(); i++)
+	{
+		if (vessels[i]->getName == oldname)
+		{
+			index1 = i;
+			break;
+		}
+	}
+	for (size_t i = 0; i < vessels.size(); i++)
+	{
+		if (vessels[i]->getName == oldname)
+		{
+			index2 = i;
+			break;
+		}
+	}
+	if (index1 != -1 && index2 == -1)
+	{
+		vessels[index1]->setName(newname);
+	}
 
 }
 
@@ -335,10 +360,6 @@ void FERTIG::MyForm::move(String ^ input, Team T)
 
 void FERTIG::MyForm::not(String ^, Team)
 {
-
-}
-
-void FERTIG::MyForm::addObjecttoShell(Base* object) {
 
 }
 
