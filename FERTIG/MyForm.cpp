@@ -132,12 +132,9 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 	string type = chars;
 	array <String ^>^ numbers = elements[3]->Split(',');
 	float x = Convert::ToDouble(numbers[0]->Replace("(", "")), y = Convert::ToDouble(numbers[1]->Replace(")", ""));
-	for (int i = 0; i < TeamA.vessels.size(); i++)
-		if (TeamA.vessels[i]->getsName() == name)
+	for (int i = 0; i < team.vessels.size(); i++)
+		if (team.vessels[i]->getsName() == name)
 		return;
-	for (int i = 0; i < TeamB.vessels.size(); i++)
-		if (TeamB.vessels[i]->getsName() == name)
-		return;	
 	if (type == "CV")
 		newVessel = new CV(name, type, x, y);
 	else if (type == "DD")
@@ -170,6 +167,7 @@ void FERTIG::MyForm::shellMove(vector <Shell*> shells) {////////////////////////
 				if (boom <= 1.5) {
 					TeamA.vessels[x]->hp -= shells[index]->damage;
 					if (TeamA.vessels[x]->hp <= 0) {
+						removeVesselbyWF(TeamA.vessels[x], TeamA);
 						TeamA.vessels.erase(TeamA.vessels.begin() + x);
 						x--;
 					}
@@ -180,11 +178,13 @@ void FERTIG::MyForm::shellMove(vector <Shell*> shells) {////////////////////////
 				if (boom <= 1.5) {
 					TeamB.vessels[y]->hp -= shells[index]->damage;
 					if (TeamB.vessels[y]->hp <= 0) {
+						removeVesselbyWF(TeamB.vessels[y], TeamB);
 						TeamB.vessels.erase(TeamB.vessels.begin() + y);
 						y--;
 					}
 				}
 			}
+			removeShellbyWF(shells[index]);
 			shells.erase(shells.begin() + index);
 			index--;
 		}
@@ -264,20 +264,21 @@ void FERTIG::MyForm::defense(String ^ input, Team T)
 		}
 	}
 	if (index2 == -1) {
-		//Fail
+		return;
 	}
 
 
 
 	float r = sqrt(pow(T.vessels[index]->getX() - shells[index2]->getX(), 2) + pow(T.vessels[index]->getY() - shells[index2]->getY(), 2));
 	if (r > T.vessels[index]->defDistance) {
-		//Fail
+		return;
 	}
 
 	T.vessels[index]->defCurrent = T.vessels[index]->defCD;
 	
 	
 	//§â¬¶¼u§R±¼
+	removeShellbyWF(shells[index2]);
 	shells.erase(shells.begin() + index2);
 
 }
