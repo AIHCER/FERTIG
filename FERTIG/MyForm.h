@@ -91,6 +91,9 @@ namespace FERTIG
 		/// <para>順序自己想辦法</para> 
 		/// <para>要額外的 function 請GOOGLE 'C# List' </para>
 		/// </summary>
+
+		long long int time = 0;
+
 		List<String^> ^result = gcnew List<String^>();
 
 		void ShowBattleLog();
@@ -122,6 +125,8 @@ namespace FERTIG
 		void removeShellbyWF(Shell* object);
 
 		void shellMove(vector <Shell*> shells);
+
+		void showTime();
 		/*------------------------------------方法跟變數定義到這就好---------------------------------------*/
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -181,7 +186,7 @@ namespace FERTIG
 			this->lblTimes->Name = L"lblTimes";
 			this->lblTimes->Size = System::Drawing::Size(74, 24);
 			this->lblTimes->TabIndex = 3;
-			this->lblTimes->Text = L"MM:ss";
+			this->lblTimes->Text = L"00:00";
 			this->lblTimes->Click += gcnew System::EventHandler(this, &MyForm::lblTimes_Click);
 			// 
 			// groupBox1
@@ -332,6 +337,11 @@ namespace FERTIG
 			 /// </summary>
 	private: System::Void TimerStart_Tick(System::Object^  sender, System::EventArgs^  e)
 	{
+		S_TeamA = txtTeamA->Text;
+		S_TeamB = txtTeamB->Text;
+
+		txtTeamA->Text = "";
+		txtTeamB->Text = "";
 		analysisString();
 	}
 			 /*--------------------------------這裡全都是視窗物件會看到的東西-----------------------------------*/

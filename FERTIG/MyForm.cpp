@@ -86,10 +86,16 @@ void FERTIG::MyForm::analysisString()
 	for (int i = 0; i < Team_B_data->Length; i++) {
 		excute(Team_B_data[i], TeamB);
 	}
-	result->Add("");
 	shellMove(shells);
-	// ShowBattleLog();
+	ShowBattleLog();
+	showTime();
+	time++;
+}
 
+void FERTIG::MyForm::showTime()
+{
+	TimeSpan ^ts = gcnew TimeSpan(time * 10000000);
+	lblTimes->Text = ((int)ts->TotalMinutes).ToString("0#") + ":" + ts->Seconds.ToString("0#");
 }
 
 
@@ -122,6 +128,8 @@ void FERTIG::MyForm::excute(String ^ input, Team team) {
 
 void FERTIG::MyForm::set(String ^ input, Team team)
 {
+	String ^ gg = "fuck TA";
+	result->Add(gg);
 	array <String ^>^ elements = input->Split(' ');
 	Vessel *newVessel;
 	String ^ type_ = elements[2];
