@@ -126,12 +126,13 @@ namespace FERTIG
 
 		void removeShellbyWF(Shell* object);
 
-		void shellMove(vector <Shell*> shells);
+		void shellMove();
 
 		void showTime();
 
 		void cd(vector <Vessel*> A, vector <Vessel*> B);
 
+		void crash();
 		/*------------------------------------方法跟變數定義到這就好---------------------------------------*/
 #pragma region Windows Form Designer generated code
 		/// <summary>

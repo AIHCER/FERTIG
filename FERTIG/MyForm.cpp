@@ -68,8 +68,6 @@ Team TeamB("TeamB");
 //不懂的變數碰一下他 他會有說明
 
 
-
-
 /// <summary>
 /// <para>按Start的時候已經把"TeamA"跟"TeamB"的值抓好</para> 
 /// <para>這裡面就照自己的方式實作就好了</para> 
@@ -86,7 +84,8 @@ void FERTIG::MyForm::analysisString()
 	for (int i = 0; i < Team_B_data->Length; i++) {
 		excute(Team_B_data[i], TeamB);
 	}
-	shellMove(shells);
+	crash();
+	shellMove();
 	vesselMove(TeamA.vessels, TeamA);
 	vesselMove(TeamB.vessels, TeamB);
 	cd(TeamA.vessels, TeamB.vessels);
@@ -185,6 +184,8 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 		newVessel = new CG(name, type, x, y);
 	else if (type == "BB")
 		newVessel = new BB(name, type, x, y);
+	else if (type == "GG")
+		newVessel = new GG(name, type, x, y);
 	else
 	{
 		gg += " -> Fail";
@@ -202,43 +203,74 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 	result->Add(gg);
 }
 
-void FERTIG::MyForm::shellMove(vector <Shell*> shells) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void FERTIG::MyForm::shellMove() {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	float tempR = 0;
 	float boom = 0;
 	for (int index = 0; index < shells.size(); index++) {
+		bool hit = false;
+		List <String ^> ^ output = gcnew List <String ^>();
 		shells[index]->setX(shells[index]->getX() + shells[index]->xSpeed);
 		shells[index]->setY(shells[index]->getY() + shells[index]->ySpeed);
 
 		tempR = sqrt(pow(shells[index]->getX() - shells[index]->originX, 2) + pow(shells[index]->getY() - shells[index]->originY, 2));
-		if (tempR >= shells[index]->r) {
+		if (tempR >= shells[index]->r && shells.size() != 0) {
 			for (int x = 0; x < TeamA.vessels.size(); x++) {
 				boom = sqrt(pow(TeamA.vessels[x]->getX() - shells[index]->disX, 2) + pow(TeamA.vessels[x]->getY() - shells[index]->disY, 2));
 				if (boom <= 1.5) {
-					TeamA.vessels[x]->hp -= shells[index]->damage;
-					if (TeamA.vessels[x]->hp <= 0) {
-						removeVesselbyWF(TeamA.vessels[x], TeamA);
-						TeamA.vessels.erase(TeamA.vessels.begin() + x);
-						x--;
-					}
+					output->Add("TeamA " + TeamA.vessels[x]->getName());
+					hit = true;
+					TeamA.vessels[x]->minus += shells[index]->damage;
 				}
 			}
 			for (int y = 0; y < TeamB.vessels.size(); y++) {
 				boom = sqrt(pow(TeamB.vessels[y]->getX() - shells[index]->disX, 2) + pow(TeamB.vessels[y]->getY() - shells[index]->disY, 2));
 				if (boom <= 1.5) {
-					TeamB.vessels[y]->hp -= shells[index]->damage;
-					if (TeamB.vessels[y]->hp <= 0) {
-						removeVesselbyWF(TeamB.vessels[y], TeamB);
-						TeamB.vessels.erase(TeamB.vessels.begin() + y);
-						y--;
-					}
+					output->Add("TeamB " + TeamB.vessels[y]->getName());
+					hit = true;
+					TeamB.vessels[y]->minus += shells[index]->damage;
+
 				}
 			}
+			String ^ gg = "";
+			gg = "[" + lblTimes->Text + "] " + shells[index]->getName() + " arrived (" + shells[index]->disX + ", " + shells[index]->disY + ") ";
+			if (hit) {
+				gg += " -> hit {";
+				for (int i = 0; i < output->Count; i++) {
+					gg += output[i];
+					if (i != output->Count - 1)
+						gg += ", ";
+				}
+				gg += "}";
+			}
+			else {
+				gg += " -> miss";
+			}
+			result->Add(gg);
 			removeShellbyWF(shells[index]);
 			shells.erase(shells.begin() + index);
 			index--;
 		}
-		else
-		addShelltoWF(shells[index]);
+		else {
+			addShelltoWF(shells[index]);
+		}
+	}
+	for (int y = 0; y < TeamB.vessels.size(); y++) {
+		TeamB.vessels[y]->hp -= TeamB.vessels[y]->minus;
+		TeamB.vessels[y]->minus = 0;
+		if (TeamB.vessels[y]->hp <= 0) {
+			removeVesselbyWF(TeamB.vessels[y], TeamB);
+			TeamB.vessels.erase(TeamB.vessels.begin() + y);
+			y--;
+		}
+	}
+	for (int y = 0; y < TeamA.vessels.size(); y++) {
+		TeamA.vessels[y]->hp -= TeamA.vessels[y]->minus;
+		TeamA.vessels[y]->minus = 0;
+		if (TeamA.vessels[y]->hp <= 0) {
+			removeVesselbyWF(TeamA.vessels[y], TeamA);
+			TeamA.vessels.erase(TeamA.vessels.begin() + y);
+			y--;
+		}
 	}
 }
 
@@ -290,8 +322,8 @@ void FERTIG::MyForm::fire(String ^ input, Team T)
 	float d = y - T.vessels[index]->getY();
 	float cos = c / r;
 	float sin = d / r;
-	float xSpeed = cos * T.vessels[index]->shellSpeed / 60 * 15;
-	float ySpeed = sin * T.vessels[index]->shellSpeed / 60 * 15;
+	float xSpeed = cos * T.vessels[index]->shellSpeed / 60;
+	float ySpeed = sin * T.vessels[index]->shellSpeed / 60;
 	chars = (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(T.getTeamName()).ToPointer());
 	string Tname = chars;
 	Shell * A;
@@ -397,28 +429,42 @@ void FERTIG::MyForm::tag(String ^ input, Team T)
 
 void FERTIG::MyForm::move(String ^ input, Team T)
 {
+	String ^ gg = "[" + lblTimes->Text + "] ";
+	gg += T.getTeamName();
+	gg += " ";
 	array <String ^>^ elements = input->Split(' ');
 	String ^ vesselName = elements[1];
 	String ^ speedstring = elements[2];
 	String ^ anglestring = elements[3];
-
+	gg += elements[1];
+	gg += " MOVE to ";
+	gg += elements[3];
+	gg += " as ";
+	gg += elements[2];
 	double speed = Convert::ToDouble(speedstring);
 	double angle = Convert::ToDouble(anglestring);
 
 	int index = T.isNameVessel(vesselName);
 	if (index == -1) {
-		//Fail
+		gg += " -> Fail";
+		result->Add(gg);
+		return; //Fail
 	}
 
 	if (abs(speed) > T.vessels[index]->speed) {
+		gg += " -> Fail";
+		result->Add(gg);
+		return;
 		//Fail
 	}
 	float q = angle / 180 * PI;
-	float xSpeed = std::cos(q) * speed;
-	float ySpeed = -std::sin(q) * speed;
+	float xSpeed = std::cos(q) * speed / 60;
+	float ySpeed = -std::sin(q) * speed / 60;
 	T.vessels[index]->xSpeed = xSpeed;
 	T.vessels[index]->ySpeed = ySpeed;
 	T.vessels[index]->moveORnot = true;
+	gg += " -> Success";
+	result->Add(gg);
 }
 
 void FERTIG::MyForm::vesselMove(vector <Vessel*> vessels, Team T) {
@@ -461,33 +507,47 @@ void FERTIG::MyForm::not(String ^, Team)
 
 void FERTIG::MyForm::addShelltoWF(Shell* object) {
 	String ^ labelName = object->getName();
+	labelName = labelName->Replace("-", "");
 	Label ^ newObject = gcnew Label();
-	removeShellbyWF(object);
-	newObject->Name = labelName;
-	newObject->Text = "●" + object->getName();
+	if (this->Controls[labelName] != nullptr)
+		newObject = (Label^)this->Controls[labelName];
+	else {
+		newObject->Name = labelName;
+		newObject->Text = "●" + object->getName();
+		//確認他的隊伍然後改顏色
+		newObject->ForeColor = Color::Purple;
+		//放到畫面上
+		newObject->AutoSize = true;
+	}
 	newObject->Location = Point(object->getX() * 20 + 10, object->getY() * 20 + 10);
-	//確認他的隊伍然後改顏色
-	newObject->ForeColor = Color::Purple;
-	//放到畫面上
-	newObject->AutoSize = true;
-	this->Controls->Add(newObject);
+	if (this->Controls[labelName] == nullptr) {
+		removeShellbyWF(object);
+		this->Controls->Add(newObject);
+	}
 }
 
 void FERTIG::MyForm::addVesseltoWF(Base* object, Team team) {
 	String ^ labelName = team.getTeamName() + "_" + object->getName();
+	labelName = labelName->Replace("-", "");
 	Label ^ newObject = gcnew Label();
-	removeVesselbyWF(object, team);
-	newObject->Name = labelName;
-	newObject->Text = "▲" + object->getName();
+	if (this->Controls[labelName] != nullptr)
+		newObject = (Label^)this->Controls[labelName];
+	else {
+		newObject->Name = labelName;
+		newObject->Text = "▲" + object->getName();
+		//確認他的隊伍然後改顏色
+		if (team.getTeamName() == "TeamA")
+			newObject->ForeColor = Color::Red;
+		else
+			newObject->ForeColor = Color::Blue;
+		newObject->AutoSize = true;
+	}
 	newObject->Location = Point(object->getX() * 20 + 10, object->getY() * 20 + 10);
-	//確認他的隊伍然後改顏色
-	if (team.getTeamName() == "TeamA")
-		newObject->ForeColor = Color::Red;
-	else
-		newObject->ForeColor = Color::Blue;
-	newObject->AutoSize = true;
 	//放到畫面上
-	this->Controls->Add(newObject);
+	if (this->Controls[labelName] == nullptr) {
+		removeVesselbyWF(object, team);
+		this->Controls->Add(newObject);
+	}
 }
 
 void FERTIG::MyForm::removeVesselbyWF(Base* object, Team team) {
@@ -521,5 +581,109 @@ void FERTIG::MyForm::ShowBattleLog()
 	for (int i = 0; i < result->Count; i++)
 	{
 		txtLog->Text += result[i] + "\r\n";
+	}
+}
+
+void FERTIG::MyForm::crash() {
+
+	for (size_t i = 0; i < TeamA.vessels.size(); i++)
+	{
+		for (size_t j = i + 1; j < TeamA.vessels.size(); j++)
+		{
+			float r = sqrt(pow(TeamA.vessels[i]->getX() - TeamA.vessels[j]->getX(), 2) + pow(TeamA.vessels[i]->getY() - TeamA.vessels[j]->getY(), 2));
+			if (r < 0.5 && TeamA.vessels[i]->hp > 0 && TeamA.vessels[j]->hp > 0)
+			{
+				TeamA.vessels[i]->moveORnot = false;
+				TeamA.vessels[j]->moveORnot = false;
+				TeamA.vessels[i]->hp -= 1;
+				TeamA.vessels[j]->hp -= 1;
+				String ^ gg = "[" + lblTimes->Text + "] ";
+				gg += TeamA.getTeamName();
+				gg += "'s ";
+				gg += TeamA.vessels[i]->getName();
+				gg += " & ";
+				gg += TeamA.getTeamName();
+				gg += "'s ";
+				gg += TeamA.vessels[j]->getName();
+				gg += " collide and stop. \r\n             ";
+				gg = gg + TeamA.vessels[i]->getName() + "'s hp -> " + TeamA.vessels[i]->hp;
+				gg += "\r\n             ";
+				gg = gg + TeamA.vessels[j]->getName() + "'s hp -> " + TeamA.vessels[j]->hp;
+				result->Add(gg);
+			}
+		}
+	}
+	for (size_t i = 0; i < TeamB.vessels.size(); i++)
+	{
+		for (size_t j = i + 1; j < TeamB.vessels.size(); j++)
+		{
+			float r = sqrt(pow(TeamB.vessels[i]->getX() - TeamB.vessels[j]->getX(), 2) + pow(TeamB.vessels[i]->getY() - TeamB.vessels[j]->getY(), 2));
+			if (r < 0.5 && TeamB.vessels[i]->hp > 0 && TeamB.vessels[j]->hp > 0)
+			{
+				TeamB.vessels[i]->moveORnot = false;
+				TeamB.vessels[j]->moveORnot = false;
+				TeamB.vessels[i]->hp -= 1;
+				TeamB.vessels[j]->hp -= 1;
+				String ^ gg = "[" + lblTimes->Text + "] ";
+				gg += TeamB.getTeamName();
+				gg += "'s ";
+				gg += TeamB.vessels[i]->getName();
+				gg += " & ";
+				gg += TeamB.getTeamName();
+				gg += "'s ";
+				gg += TeamB.vessels[j]->getName();
+				gg += " collide and stop. \r\n             ";
+				gg = gg + TeamB.vessels[i]->getName() + "'s hp -> " + TeamB.vessels[i]->hp;
+				gg += "\r\n             ";
+				gg = gg + TeamB.vessels[j]->getName() + "'s hp -> " + TeamB.vessels[j]->hp;
+				result->Add(gg);
+			}
+		}
+	}
+	for (size_t i = 0; i < TeamA.vessels.size(); i++)
+	{
+		for (size_t j = 0; j < TeamB.vessels.size(); j++)
+		{
+			float r = sqrt(pow(TeamA.vessels[i]->getX() - TeamB.vessels[j]->getX(), 2) + pow(TeamA.vessels[i]->getY() - TeamB.vessels[j]->getY(), 2));
+			if (r < 0.5 && TeamA.vessels[i]->hp > 0 && TeamB.vessels[j]->hp > 0)
+			{
+				TeamA.vessels[i]->moveORnot = false;
+				TeamB.vessels[j]->moveORnot = false;
+				TeamA.vessels[i]->hp -= 1;
+				TeamB.vessels[j]->hp -= 1;
+				String ^ gg = "[" + lblTimes->Text + "] ";
+				gg += TeamA.getTeamName();
+				gg += "'s ";
+				gg += TeamA.vessels[i]->getName();
+				gg += " & ";
+				gg += TeamB.getTeamName();
+				gg += "'s ";
+				gg += TeamB.vessels[j]->getName();
+				gg += " collide and stop. \r\n             ";
+				gg = gg + TeamA.vessels[i]->getName() + "'s hp -> " + TeamA.vessels[i]->hp;
+				gg += "\r\n             ";
+				gg = gg + TeamB.vessels[j]->getName() + "'s hp -> " + TeamB.vessels[j]->hp;
+				result->Add(gg);
+
+			}
+		}
+	}
+	for (size_t i = 0; i < TeamA.vessels.size(); i++)
+	{
+		if (TeamA.vessels[i]->hp <= 0)
+		{
+			removeVesselbyWF(TeamA.vessels[i], TeamA);
+			TeamA.vessels.erase(TeamA.vessels.begin() + i);
+			i--;
+		}
+	}
+	for (size_t i = 0; i < TeamB.vessels.size(); i++)
+	{
+		if (TeamB.vessels[i]->hp <= 0)
+		{
+			removeVesselbyWF(TeamB.vessels[i], TeamB);
+			TeamB.vessels.erase(TeamB.vessels.begin() + i);
+			i--;
+		}
 	}
 }

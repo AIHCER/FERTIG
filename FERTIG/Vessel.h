@@ -29,6 +29,7 @@ public:
 	float xSpeed;
 	float ySpeed;
 	bool moveORnot;
+	int minus = 0;
 private:
 	string type;
 
@@ -38,6 +39,13 @@ class DD : public Vessel {
 public:
 	DD();
 	DD(string name, string type, float x, float y);
+private:
+};
+
+class GG : public Vessel {
+public:
+	GG();
+	GG(string name, string type, float x, float y);
 private:
 };
 

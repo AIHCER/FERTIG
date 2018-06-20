@@ -39,6 +39,14 @@ CV::CV()
 {
 }
 
+GG::GG(string name, string type, float x, float y) : Vessel(name, type, 10, 8, 29, 1, 20, 1000,1000, 100, x, y)
+{
+}
+
+GG::GG()
+{
+}
+
 CV::CV(string name, string type, float x, float y) : Vessel(name, type, 5, 1, 25, 60, 5, 15, 3, 4, x, y)
 {
 }
