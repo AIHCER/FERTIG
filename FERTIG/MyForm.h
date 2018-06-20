@@ -113,6 +113,8 @@ namespace FERTIG
 		void tag(String ^, Team);
 
 		void move(String ^, Team);
+
+		void vesselMove(vector <Vessel*> vessels, Team T);
 		
 		void not(String ^, Team);
 
@@ -127,6 +129,9 @@ namespace FERTIG
 		void shellMove(vector <Shell*> shells);
 
 		void showTime();
+
+		void cd(vector <Vessel*> A, vector <Vessel*> B);
+
 		/*------------------------------------方法跟變數定義到這就好---------------------------------------*/
 #pragma region Windows Form Designer generated code
 		/// <summary>

@@ -26,6 +26,9 @@ public:
 	int defCD;
 	int damage;
 	int shellSpeed;
+	float xSpeed;
+	float ySpeed;
+	bool moveORnot;
 private:
 	string type;
 

@@ -87,6 +87,9 @@ void FERTIG::MyForm::analysisString()
 		excute(Team_B_data[i], TeamB);
 	}
 	shellMove(shells);
+	vesselMove(TeamA.vessels, TeamA);
+	vesselMove(TeamB.vessels, TeamB);
+	cd(TeamA.vessels, TeamB.vessels);
 	ShowBattleLog();
 	showTime();
 	time++;
@@ -126,23 +129,54 @@ void FERTIG::MyForm::excute(String ^ input, Team team) {
 	}
 }
 
+void FERTIG::MyForm::cd(vector <Vessel*> A, vector <Vessel*> B) {
+	for (int x = 0; x < A.size(); x++) {
+		if (A[x]->atkCurrent > 0) {
+			A[x]->atkCurrent--;
+		}
+		if (A[x]->defCurrent > 0) {
+			A[x]->defCurrent--;
+		}
+	}
+	for (int x = 0; x < B.size(); x++) {
+		if (B[x]->atkCurrent > 0) {
+			B[x]->atkCurrent--;
+		}
+		if (B[x]->defCurrent > 0) {
+			B[x]->defCurrent--;
+		}
+	}
+}
+
 void FERTIG::MyForm::set(String ^ input, Team team)
 {
-	String ^ gg = "fuck TA";
-	result->Add(gg);
+	String ^ gg = "[" + lblTimes->Text + "] ";
+	gg += team.getTeamName();
+	gg += " SET ";
+
 	array <String ^>^ elements = input->Split(' ');
 	Vessel *newVessel;
 	String ^ type_ = elements[2];
 	const char* chars =
 		(const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(elements[1])).ToPointer();
+	gg += elements[1];
+	gg += " with ";
 	string name = chars;
 	chars = (const char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(type_)).ToPointer();
+	gg += type_;
+	gg += " at ";
 	string type = chars;
+	gg += elements[3];
 	array <String ^>^ numbers = elements[3]->Split(',');
 	float x = Convert::ToDouble(numbers[0]->Replace("(", "")), y = Convert::ToDouble(numbers[1]->Replace(")", ""));
 	for (int i = 0; i < team.vessels.size(); i++)
 		if (team.vessels[i]->getsName() == name)
-		return;
+		{
+			gg += " -> Fail";
+			result->Add(gg);
+			return;
+		}
+
 	if (type == "CV")
 		newVessel = new CV(name, type, x, y);
 	else if (type == "DD")
@@ -150,15 +184,22 @@ void FERTIG::MyForm::set(String ^ input, Team team)
 	else if (type == "CG")
 		newVessel = new CG(name, type, x, y);
 	else if (type == "BB")
-
 		newVessel = new BB(name, type, x, y);
+	else
+	{
+		gg += " -> Fail";
+		result->Add(gg);
+		return;
+	}
 	addVesseltoWF(newVessel, team);
-	
+
 
 	if (team.getTeamName() == "TeamA")
 		TeamA.vessels.push_back(newVessel);
 	else
 		TeamB.vessels.push_back(newVessel);
+	gg += " -> Success";
+	result->Add(gg);
 }
 
 void FERTIG::MyForm::shellMove(vector <Shell*> shells) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,25 +245,36 @@ void FERTIG::MyForm::shellMove(vector <Shell*> shells) {////////////////////////
 
 void FERTIG::MyForm::fire(String ^ input, Team T)
 {
+	String ^ gg = "[" + lblTimes->Text + "] ";
+	gg += T.getTeamName();
 	array <String ^>^ elements = input->Split(' ');
 	String ^ name = elements[1];
+	gg += " ";
+	gg += name;
+	gg += " Fire to ";
+	gg += elements[2];
 	array <String ^>^ numbers = elements[2]->Split(',');
 	float x = Convert::ToDouble(numbers[0]->Replace("(", "")), y = Convert::ToDouble(numbers[1]->Replace(")", ""));
-	
+
 	int index = T.isNameVessel(name);
 	if (index == -1) {
+		gg += " -> Fail ";
+		result->Add(gg);
 		return; // fail
 	}
 
 	if (T.vessels[index]->atkCurrent != 0) {
+		gg += " -> Fail ";
+		result->Add(gg);
 		return; // fail
 	}
 
 	float r = sqrt(pow(T.vessels[index]->getX() - x, 2) + pow(T.vessels[index]->getY() - y, 2));
 	if (r > T.vessels[index]->atkDistance) {
+		gg += " -> Fail ";
+		result->Add(gg);
 		return; // fail
 	}
-
 
 	T.vessels[index]->atkCurrent = T.vessels[index]->atkCD;
 	//每次跑的時候還沒減掉CD
@@ -247,20 +299,26 @@ void FERTIG::MyForm::fire(String ^ input, Team T)
 	A->setX(T.vessels[index]->getX());
 	A->setY(T.vessels[index]->getY());
 	A->setName(shellName);
-	
+
 	shells.push_back(A);
+	gg += " -> Success ";
+	result->Add(gg);
 }
 
 
 
 void FERTIG::MyForm::defense(String ^ input, Team T)
 {
+	String ^ log = "[" + lblTimes->Text + "] ";
 	array <String ^>^ elements = input->Split(' ');
 	String ^ vesselName = elements[1];
 	String ^ shellName = elements[2];
+	log += vesselName + " DEFENSE " + shellName;
 	int index = T.isNameVessel(vesselName);
 	if (index == -1) {
-		//Fail
+		log += " -> Fail";
+		result->Add(log);
+		return;
 	}
 
 	//if ()//Shell是否在場上
@@ -272,30 +330,38 @@ void FERTIG::MyForm::defense(String ^ input, Team T)
 		}
 	}
 	if (index2 == -1) {
+		log += " -> Fail";
+		result->Add(log);
 		return;
 	}
 
-
-
 	float r = sqrt(pow(T.vessels[index]->getX() - shells[index2]->getX(), 2) + pow(T.vessels[index]->getY() - shells[index2]->getY(), 2));
 	if (r > T.vessels[index]->defDistance) {
+		log += " -> Fail";
+		result->Add(log);
 		return;
 	}
 
 	T.vessels[index]->defCurrent = T.vessels[index]->defCD;
 	
-	
 	//把炮彈刪掉
 	removeShellbyWF(shells[index2]);
 	shells.erase(shells.begin() + index2);
-
+	log += " -> Hit";
+	result->Add(log);
 }
 
 void FERTIG::MyForm::tag(String ^ input, Team T)
 {
+	String ^ gg = "[" + lblTimes->Text + "] ";
+	gg += T.getTeamName();
+	gg += " RENAME ";
 	array <String ^>^ elements = input->Split(' ');
 	String ^ oldname = elements[1];
 	String ^ newname = elements[2];
+	gg += oldname;
+	gg += " to ";
+	gg += newname;
 	int index1 = -1;
 	int index2 = -1;
 	for (size_t i = 0; i < T.vessels.size(); i++)
@@ -316,8 +382,16 @@ void FERTIG::MyForm::tag(String ^ input, Team T)
 	}
 	if (index1 != -1 && index2 == -1)
 	{
+		removeVesselbyWF(T.vessels[index1], T);
 		T.vessels[index1]->setName(newname);
 		addVesseltoWF(T.vessels[index1], T);
+		gg += " -> Success";
+		result->Add(gg);
+	}
+	else
+	{
+		gg += " -> Fail";
+		result->Add(gg);
 	}
 }
 
@@ -327,7 +401,7 @@ void FERTIG::MyForm::move(String ^ input, Team T)
 	String ^ vesselName = elements[1];
 	String ^ speedstring = elements[2];
 	String ^ anglestring = elements[3];
-	
+
 	double speed = Convert::ToDouble(speedstring);
 	double angle = Convert::ToDouble(anglestring);
 
@@ -342,27 +416,42 @@ void FERTIG::MyForm::move(String ^ input, Team T)
 	float q = angle / 180 * PI;
 	float xSpeed = std::cos(q) * speed;
 	float ySpeed = -std::sin(q) * speed;
-	T.vessels[index]->setX(T.vessels[index]->getX() + xSpeed);
-	T.vessels[index]->setY(T.vessels[index]->getY() + ySpeed);
-	bool outOfRange = false;
-	if (T.vessels[index]->getX() - 20 > ERR) {
-		T.vessels[index]->setX(20);
-		outOfRange = true;
+	T.vessels[index]->xSpeed = xSpeed;
+	T.vessels[index]->ySpeed = ySpeed;
+	T.vessels[index]->moveORnot = true;
+}
+
+void FERTIG::MyForm::vesselMove(vector <Vessel*> vessels, Team T) {
+	for (int index = 0; index < vessels.size(); index++) {
+		if (vessels[index]->moveORnot == true) {
+			vessels[index]->setX(vessels[index]->getX() + vessels[index]->xSpeed);
+			vessels[index]->setY(vessels[index]->getY() + vessels[index]->ySpeed);
+			bool outOfRange = false;
+			if (vessels[index]->getX() - 20 > ERR) {
+				vessels[index]->setX(20);
+				outOfRange = true;
+				vessels[index]->moveORnot = false;
+			}
+			if (vessels[index]->getX() < -ERR) {
+				vessels[index]->setX(0);
+				outOfRange = true;
+				vessels[index]->moveORnot = false;
+			}
+			if (vessels[index]->getY() - 20 > ERR) {
+				vessels[index]->setY(20);
+				outOfRange = true;
+				vessels[index]->moveORnot = false;
+			}
+			if (vessels[index]->getY() < -ERR) {
+				vessels[index]->setY(0);
+				outOfRange = true;
+				vessels[index]->moveORnot = false;
+			}
+			if (!outOfRange)
+				addVesseltoWF(vessels[index], T);
+		}
+
 	}
-	if (T.vessels[index]->getX() < -ERR) {
-		T.vessels[index]->setX(0); 
-		outOfRange = true;
-	}
-	if (T.vessels[index]->getY() - 20 > ERR) {
-		T.vessels[index]->setY(20);
-		outOfRange = true;
-	}
-	if (T.vessels[index]->getY() < -ERR) {
-		T.vessels[index]->setY(0);
-		outOfRange = true;
-	}
-	if (!outOfRange)
-		addVesseltoWF(T.vessels[index], T);
 }
 
 void FERTIG::MyForm::not(String ^, Team)
