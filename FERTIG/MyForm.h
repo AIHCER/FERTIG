@@ -11,7 +11,7 @@
 #include <cmath>
 #include <math.h>
 #define PI 3.14159
-#define ERR 0.00001
+#define ERR 0.00000000001
 
 namespace FERTIG
 {
@@ -130,7 +130,7 @@ namespace FERTIG
 
 		void showTime();
 
-		void cd(vector <Vessel*> A, vector <Vessel*> B);
+		void cd();
 
 		void crash();
 		/*------------------------------------方法跟變數定義到這就好---------------------------------------*/
@@ -190,7 +190,7 @@ namespace FERTIG
 			this->lblTimes->Font = (gcnew System::Drawing::Font(L"新細明體", 14));
 			this->lblTimes->Location = System::Drawing::Point(48, 492);
 			this->lblTimes->Name = L"lblTimes";
-			this->lblTimes->Size = System::Drawing::Size(74, 24);
+			this->lblTimes->Size = System::Drawing::Size(60, 24);
 			this->lblTimes->TabIndex = 3;
 			this->lblTimes->Text = L"00:00";
 			this->lblTimes->Click += gcnew System::EventHandler(this, &MyForm::lblTimes_Click);
@@ -230,6 +230,7 @@ namespace FERTIG
 			this->txtLog->Multiline = true;
 			this->txtLog->Name = L"txtLog";
 			this->txtLog->ReadOnly = true;
+			this->txtLog->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
 			this->txtLog->Size = System::Drawing::Size(280, 476);
 			this->txtLog->TabIndex = 0;
 			this->txtLog->TextChanged += gcnew System::EventHandler(this, &MyForm::txtLog_TextChanged);

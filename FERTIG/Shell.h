@@ -18,6 +18,9 @@ public:
 	float ySpeed;
 	float r;
 	int damage;
+	bool warn = false;
+	float boomR;
+	bool nuclear = false;
 	string teamName;
 private:
 };
